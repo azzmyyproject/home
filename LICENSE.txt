@@ -1,0 +1,29 @@
+TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+Copyright (c) 2026 Azzmy Noor. All rights reserved.
+
+This software and its associated documentation files (the "Software") are 
+proprietary to the Copyright Holder. Access to the Software is granted 
+solely for review, educational evaluation, and demonstration purposes 
+via this public repository.
+
+PREVENTION OF DOWNLOADING, CLONING, AND REPRODUCTION:
+1. STRICTLY PROHIBITED: You may not download, clone, mirror, copy, or 
+   reproduce the source code or any part of this Software to any local 
+   machine, external server, or cloud storage.
+2. NO COMMERCIAL OR PRIVATE USE: You are strictly forbidden from running, 
+   compiling, executing, or using this code for any personal, academic, 
+   or commercial projects.
+3. NO DERIVATIVE WORKS: You may not modify, alter, adapt, or create 
+   derivative works based upon this Software.
+4. NO DISTRIBUTION: You may not redistribute, publish, sublicense, 
+   or sell copies of the Software to anyone else.
+
+LEGAL NOTICE:
+By viewing this repository, you acknowledge that you do not acquire any 
+ownership rights or usage licenses. Any unauthorized download, copy, 
+distribution, or compilation of this source code constitutes a direct 
+infringement of international copyright laws and will be subject to 
+legal action.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
