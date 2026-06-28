@@ -149,10 +149,10 @@ document.addEventListener("DOMContentLoaded", () => {
     filterButtons.forEach(button => {
         button.addEventListener("click", () => {
             filterButtons.forEach(btn => {
-                btn.classList.remove("active", "bg-blue-600/20", "text-blue-400", "border-blue-500/30");
+                btn.classList.remove("active", "bg-green-600/20", "text-green-400", "border-green-500/30");
                 btn.classList.add("bg-gray-800", "text-gray-400", "border-transparent");
             });
-            button.classList.add("active", "bg-blue-600/20", "text-blue-400", "border-blue-500/30");
+            button.classList.add("active", "bg-green-600/20", "text-green-400", "border-green-500/30");
             button.classList.remove("bg-gray-800", "text-gray-400", "border-transparent");
             
             const filterValue = button.getAttribute("data-filter");
