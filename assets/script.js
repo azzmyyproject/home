@@ -1,198 +1,422 @@
-document.addEventListener("DOMContentLoaded", () => {
+/* ==========================================================================
+   GLOBAL STYLE & BACKGROUND (Sama seperti Aslinya)
+   ========================================================================== */
+body {
+    background-color: #15171b; /* Warna gelap khas GitHub/azzmyyproject */
+    color: #c9d1d9;
+    font-family: -apple-system, BlinkMacSystemFont, "Google Sans", Bold, Arial, sans-serif, Regular;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN (Otomatis Menciut di Mobile/Tablet/Desktop)
+   ========================================================================== */
+
+/* 1. Pembungkus Grid Kartu (Services & Recent Works) */
+.grid {
+    display: grid;
+    gap: 16px; /* Jarak antar kartu */
+}
+
+/* Ukuran Mobile (Default): Otomatis menciut jadi 1 Kolom ke bawah */
+.grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+/* Ukuran Tablet (Layar Lebar > 640px): Berubah rapi menjadi 2 Kolom bersisian */
+@media (min-width: 640px) {
+    .sm\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* Ukuran Desktop / Laptop (Layar > 1024px): Melebar proporsional menjadi 3 Kolom */
+@media (min-width: 1024px) {
+    .lg\:grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* ==========================================================================
+   HOVER EFFECTS & INTERACTION (Efek Sentuhan Kartu)
+   ========================================================================== */
+
+/* Efek Kartu Service & Project */
+.service-card, .project-card {
+    background-color: #16221c;
+    border: 1px solid #303d33;
+    border-radius: 12px;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s ease, box-shadow 0.25s ease;
+}
+
+/* Saat Kursor Menyentuh Kartu (Hover) */
+.service-card:hover, .project-card:hover {
+    transform: translateY(-4px); /* Mengangkat kartu sedikit ke atas */
+    border-color: #33ff00; /* Garis tepi berubah biru terang */
+    box-shadow: 0 10px 20px rgba(51, 255, 0, 0.1); /* Efek bayangan hijau tipis */
+}
+
+/* ==========================================================================
+   FOTO PROFIL (Bentuk Lingkaran Sempurna & Tidak Gepeng)
+   ========================================================================== */
+.avatar-gradient {
+    position: relative;
+    border: 2px solid #15683e; /* Garis tepi tipis di sekitar foto profil */
+}
+
+/* Lingkaran cahaya hijau lembut di belakang foto profil */
+.avatar-gradient::after {
+    content: 'main.jpg';
+    position: absolute;
+    inset: -3px;
+    background: linear-gradient(45deg, #33ff00, #00ff00, #33ff00);
+    border-radius: 9999px;
+    z-index: -1;
+    opacity: 0.4;
+}
+
+.profile-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Memotong foto di tengah secara otomatis agar pas */
+    object-position: center;
+    border-radius: 9999px;
+}
+
+/* ==========================================================================
+   TIMELINE EXPERIENCE (Garis Sejarah Pengalaman)
+   ========================================================================== */
+.timeline-dot {
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.timeline-item:hover .timeline-dot {
+    background-color: #01ec6b;
+    box-shadow: 0 0 10px #01ec6b;
+}
+
+/* ==========================================================================
+   ANIMASI AWAL (Efek Memudar Saat Website Pertama Terbuka)
+   ========================================================================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.div-class-service-card {
+    /* 1. Membuat background transparan (kaca) */
+    background: rgba(255, 255, 255, 0.03); 
     
-    // ==========================================
-    // 1. DATA LAYANAN & PROYEK
-    // ==========================================
-    const servicesData = {
-        "01": {
-            title: "IoT Solutions",
-            icon: "fa-wifi",
-            desc: "Connecting the physical world to the digital realm with smart solutions for enhanced connectivity. Kami merancang arsitektur end-to-end mulai dari sensor, mikrokomputer, hingga pengiriman data aman melalui protokol IoT.",
-            specs: ["Sensor Integration (Temperature, Gas, Proximity)", "Protokol MQTT, HTTP RestAPI, WebSocket", "ESP32 & STM32 Architecture", "Battery Management System & Low Power Node"]
-        },
-        "02": {
-            title: "Control Automation",
-            icon: "fa-sliders",
-            desc: "Streamline processes and elevate operations with smart, automated industrial solutions. Otomatisasi sistem mekanikal dan elektrikal guna meningkatkan efisiensi industri produksi dan rumahan.",
-            specs: ["Relay & Actuator Control", "Modbus RS485 / Industrial Protocol RTU", "PLC Interfacing & Calibration", "Pneumatic & Motor Driver Driver Speed Control"]
-        },
-        "03": {
-            title: "PCB Design & Assembly",
-            icon: "fa-microchip",
-            desc: "Transform your electronic concepts into reality with expert design and assembly services. Pembuatan skematik sirkuit elektronik hingga layouting PCB multi-layer yang siap diproduksi massal.",
-            specs: ["Schematic Capture & PCB Layout (Eagle, KiCad)", "High-Speed Signal Routing & Noise Reduction", "BOM (Bill of Materials) Optimization", "SMD & DIP Component SMT Assembly"]
-        },
-        "04": {
-            title: "Web Application",
-            icon: "fa-globe",
-            desc: "Custom platforms dedicated to monitoring and controlling connected devices with ease. Pembuatan dashboard monitoring real-time berbasis web yang ringan, responsif, dan mudah dipahami.",
-            specs: ["Real-time Telemetry Widgets", "NodeJS / Python Backend Server", "Responsive Frontend Dashboard (Tailwind CSS)", "Database Time-series Integration"]
-        }
-    };
-
-    const projectsData = {
-        "p1": {
-            title: "GoLite IoT Platform",
-            tag: "IoT Ecosystem",
-            icon: "fa-cubes",
-            desc: "Ekosistem IoT All-in-one dengan fitur AI Analysis, Face Recognition, dan manajemen perangkat skala industri. Platform ini dirancang untuk mempermudah developer memonitor ribuan sensor sekaligus.",
-            specs: ["Arsitektur Microservices", "Real-time AI Face Recognition AI Inference", "Skalabilitas Data Time-series", "Multi-tenant Device Management"]
-        },
-        "p2": {
-            title: "IoT Kita | MQTT Control Center",
-            tag: "MQTT Broker & Dashboard",
-            icon: "fa-chart-line",
-            desc: "Dashboard MQTT Profesional dengan Real-time Telemetry, Analisis Data Time-series, dan Sistem Widget Modular yang dapat disesuaikan kebutuhan client.",
-            specs: ["Protokol WebSockets & MQTT via TLS", "Penyimpanan Data InfluxDB", "Widget Seret & Lepas (Drag & Drop)", "Sistem Alergi & Notifikasi Telegram Telegram"]
-        },
-        "p3": {
-            title: "IoT Vending Machine",
-            tag: "Smart Hardware",
-            icon: "fa-cash-register",
-            desc: "Sistem vending machine pintar dengan integrasi pembayaran otomatis menggunakan QRIS (Gopay, OVO, Dana) serta manajemen stok produk berbasis cloud logistik.",
-            specs: ["Integrasi API Payment Gateway QRIS", "Mekanisme Motor Stepper Dispenser", "Konektivitas Fail-safe GSM / WiFi", "Dashboard Monitoring Stok Real-time"]
-        },
-        "p4": {
-            title: "Industrial Power Monitoring",
-            tag: "Automation & Electrical",
-            icon: "fa-bolt",
-            desc: "Sistem pelacakan konsumsi energi listrik 3-Phase menggunakan Industrial Modbus Meter. Mampu memprediksi lonjakan beban dan efisiensi mesin pabrik.",
-            specs: ["Protokol Komunikasi Modbus RTU RS485", "Kalkulasi Faktor Daya (Power Factor)", "Ekspor Laporan Otomatis (CSV/PDF)", "Pemasangan Rail DIN Standar Industri"]
-        },
-        "p5": {
-            title: "Smart Robot AI & Telemetry",
-            tag: "Robotics",
-            icon: "fa-robot",
-            desc: "Robot penjelajah otonom yang dibekali dengan kecerdasan buatan (Computer Vision) untuk melacak objek, dikendalikan via remote jarak jauh dengan latensi sangat rendah.",
-            specs: ["Pengolahan Citra OpenCV / Jetson Nano", "Komunikasi Data WebSocket (<50ms Latency)", "Sistem Navasigasi SLAM & LiDAR", "Telemetri Baterai & Arus Motor Aktif"]
-        },
-        "p6": {
-            title: "Integrated Smart School System",
-            tag: "Enterprise System",
-            icon: "fa-graduation-cap",
-            desc: "Ekosistem Sekolah Pintar komprehensif: Absensi berbasis Multi-faktor (Wajah & RFID), sistem kantin non-tunai (Cashless), serta sistem otomatisasi lampu/AC gedung.",
-            specs: ["Gateway RFID UHF Jarak Jauh", "Sistem Saldo Terenkripsi E-Wallet", "Relay Kontrol Jadwal AC Otomatis", "Aplikasi Mobile Portal Wali Murid"]
-        }
-    };
-
-    // ==========================================
-    // 2. LOGIKA OPERASI MODAL POP-UP
-    // ==========================================
-    const modal = document.getElementById("serviceModal");
-    const modalContent = document.getElementById("modalContent");
-    const closeBtns = document.querySelectorAll("#closeModalBtn, #closeModalBottomBtn");
+    /* 2. Efek Blur Liquid di belakang kaca */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px); /* Dukungan untuk Safari/iOS */
     
-    const modalIcon = document.getElementById("modalIcon");
-    const modalNumber = document.getElementById("modalNumber");
-    const modalTitle = document.getElementById("modalTitle");
-    const modalDescription = document.getElementById("modalDescription");
-    const modalSpecs = document.getElementById("modalSpecs");
+    /* 3. Border tipis semi-transparan sebagai refleksi list kaca */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    
+    /* 4. Efek bayangan lembut (soft shadow) agar kotak terlihat mengambang */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    
+    /* 5. Opsional: Transisi halus saat di-hover */
+    transition: all 0.4s ease-in-out;
+}
 
-    // Buka Modal untuk Service (01 - 04)
-    const serviceCards = document.querySelectorAll(".service-card");
-    serviceCards.forEach(card => {
-        card.addEventListener("click", () => {
-            const numText = card.querySelector("span").textContent.trim();
-            const id = numText.substring(0, 2);
-            const data = servicesData[id];
-            if (!data) return;
+/* Efek Hover untuk memperkuat kesan "Liquid/Fluid" */
+.div-class-service-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+    transform: translateY(-5px); /* Sedikit naik ke atas */
+}
+.social-icons a 
+{
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    border: 2px solid #01ec6b;
+    border-radius: 100%;
+    box-shadow: 0 0 10px #01ec6b;
+    font-size: 1.5rem;
+    width: 3rem;
+    height: 3rem;
+    transition: 0.3s ease;
+    color: #01ec6b;
+}
+.social-icons a:hover{
+    color: black;
+    transform: scale(1.3) translateY(-5px);
+    background-color: #01ec6b;
+    box-shadow: 0  0 50px #01ec6b;
+}
+.typing-text{
+    font-size: 30px;
+    font-weight: 700;
+    min-width: 280px;
+    min-height: -50px;
+    font-family: 'Courier New', Courier, monospace;
+    position: center;
+    justify-content: center;
+}
 
-            openModal(`${id}. Service Detail`, data.title, data.desc, data.icon, data.specs);
-        });
-    });
+.typing-text span{
+    position: relative;
+    font-size: 30px;
+}
 
-    // Buka Modal untuk Projects di Recent Works
-    const projectCards = document.querySelectorAll(".project-card");
-    projectCards.forEach(card => {
-        card.addEventListener("click", () => {
-            const projectId = card.getAttribute("data-project-id");
-            const data = projectsData[projectId];
-            if (!data) return;
+.typing-text span::before{
+    content: "software Developer";
+    color: #01ec6b;
+    animation: words 20s infinite;
+}
 
-            openModal(data.tag, data.title, data.desc, data.icon, data.specs);
-        });
-    });
+.typing-text span::after{
+    content: "";
+    background-color: transparent;
+    position: absolute;
+    width:(100%);
+    height: 100%;
+    border-left: 2px solid #01ec6b;
+    right: -0.2rem;
+    animation: cursor 0.6s infinite;
+}
 
-    // Fungsi Utama Menyuntik Data & Membuka Modal
-    function openModal(tag, title, desc, icon, specs) {
-        modalNumber.textContent = tag;
-        modalTitle.textContent = title;
-        modalDescription.textContent = desc;
-        modalIcon.innerHTML = `<i class="fa-solid ${icon}"></i>`;
-        
-        modalSpecs.innerHTML = "";
-        specs.forEach(spec => {
-            const li = document.createElement("li");
-            li.textContent = spec;
-            modalSpecs.appendChild(li);
-        });
-
-        modal.classList.remove("opacity-0", "pointer-events-none");
-        modalContent.classList.remove("scale-95");
-        modalContent.classList.add("scale-100");
+@keyframes cursor{
+    to{
+        border-left: 3px solid #ffffff;
     }
+}
 
-    // Fungsi Tutup Modal
-    const closeModal = () => {
-        modal.classList.add("opacity-0", "pointer-events-none");
-        modalContent.classList.remove("scale-100");
-        modalContent.classList.add("scale-95");
-    };
-
-    closeBtns.forEach(btn => btn.addEventListener("click", closeModal));
-    modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
-
-    // ==========================================
-    // 3. FITUR SEBELUMNYA (FILTER & SCROLL TOP)
-    // ==========================================
-    const filterButtons = document.querySelectorAll(".filter-btn");
-    filterButtons.forEach(button => {
-        button.addEventListener("click", () => {
-            filterButtons.forEach(btn => {
-                btn.classList.remove("active", "bg-green-600/20", "text-green-400", "border-green-500/30");
-                btn.classList.add("bg-gray-800", "text-gray-400", "border-transparent");
-            });
-            button.classList.add("active", "bg-green-600/20", "text-green-400", "border-green-500/30");
-            button.classList.remove("bg-gray-800", "text-gray-400", "border-transparent");
-            
-            const filterValue = button.getAttribute("data-filter");
-            projectCards.forEach(card => {
-                if (filterValue === "all" || card.getAttribute("data-category") === filterValue) {
-                    card.style.display = "flex";
-                } else {
-                    card.style.display = "none";
-                }
-            });
-        });
-    });
-
-    const scrollTopBtn = document.getElementById("scrollTopBtn");
-    window.addEventListener("scroll", () => {
-        if (window.scrollY > 300) {
-            scrollTopBtn.classList.remove("opacity-0", "translate-y-10", "invisible");
-            scrollTopBtn.classList.add("opacity-100", "translate-y-0", "visible");
-        } else {
-            scrollTopBtn.classList.add("opacity-0", "translate-y-10", "invisible");
-            scrollTopBtn.classList.remove("opacity-100", "translate-y-0", "visible");
-        }
-    });
-    scrollTopBtn.addEventListener("click", () => { window.scrollTo({ top: 0, behavior: "smooth" }); });
-});
-// Membuat elemen <style> baru di dalam memori
-const style = document.createElement('style');
-
-// Memasukan keyframes dan class animasi RGB kustom 
-style.innerHTML = `
-    @keyframes rgbShift {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+@keyframes words{
+    0%, 20%{
+        content: "Founder ";
     }
-    .animate-rgb {
-        background-size: 200% auto !important;
-        animation: rgb-flow 4s linear infinite !important;
+    21%, 40%{
+        content: "Developer ";
     }
-`;
+    41%, 60%{
+        content: "Content Creator ";
+    }
+    61%, 80%{
+        content: "IoT Developer ";
+    }
+    81%, 100%{
+        content: "Hardware Engineer ";
+    }
+}
+.section-border {
+    border-bottom: 1px solid #01ec6b;
+}
+.hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    background-color: #f2f2f200; /* Warna dasar latar belakang */
+    overflow: hidden;
+}
 
-// Menyisipkan elemen <style> ke dalam <head> dokumen
-document.head.appendChild(style);
+.hero-image {
+    height: 90vh; /* Mengisi tinggi layar */
+    object-fit: contain;
+    z-index: 1; /* Foto di bawah teks */
+}
+
+img {
+  width: 1500px; /* Ukuran ideal gambar */
+  height: auto;
+  
+  /* Kunci ukuran agar tidak ikut menciut */
+  min-width: 1500px; 
+}
+
+img {
+  width: 1500px; /* Sesuaikan ukuran seperti sebelumnya */
+  min-width: 1500px; /* Agar tidak menciut */
+  height: auto;
+
+  /* Efek halus di bagian bawah */
+  -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+}
+
+/* --- TAMPILAN DEFAULT (LAYAR LEBAR / DESKTOP) --- */
+
+.hero-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* Memastikan elemen merapat ke bawah layar */
+  align-items: center;
+  height: 10vh; /* Memenuhi tinggi layar agar tidak ada space kosong */
+  overflow: hidden;
+  position: relative;
+  background-color: #16161a; /* Warna background gelapmu */
+}
+
+.hero-image {
+  /* Memperbesar foto berdasarkan tinggi layar */
+  height: 90vh; /* Mengisi 85% dari tinggi layar agar padat ke atas */
+  width: auto; /* Lebar otomatis proporsional */
+  object-fit: contain;
+  
+  /* Supaya bagian bawahnya tetap halus memudar ke hitam seperti trik sebelumnya */
+  -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+  
+  /* Mencegah foto menciut saat browser dikecilkan */
+  flex-shrink: 0; 
+}
+
+.hero-text {
+  position: absolute;
+  bottom: 10%; /* Posisi teks di atas bagian bawah */
+  font-size: 5rem; /* Ukuran teks besar di desktop */
+  justify-content: center;
+  font-weight: bold;
+  color: #ffffff;
+ /* INI KUNCI EFEKNYA */
+    mix-blend-mode: difference;
+    /* DEFAULT: Teks normal, tidak dipaksa huruf besar semua */
+    text-transform: none; 
+ 
+}
+
+.small-text {
+    font-family: 'Caveat', cursive; /* Font tulisan tangan */
+    z-index: 2; /* Teks di atas foto */
+    font-size: 3rem;
+    color: #f3fff9; /* Warna putih agar terlihat kontras saat di-blend */
+    display: block;
+    margin-bottom: -40px;
+    margin-left: -4px;
+}
+
+.big-name {
+    font-family: 'Poppins', sans-serif;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 5.5rem; /* Ukuran sangat besar */
+    letter-spacing: -5px;
+    color: #00ff88; /* Warna putih agar muncul efek 'tembus' di baju gelap */
+    text-transform: auto; /* Tidak dipaksa huruf besar semua */
+}
+
+
+/* --- TAMPILAN SAAT LAYAR DICIUTKAN (MOBILE / TABLET) --- */
+@media (max-width: 768px) {
+  .hero-image {
+    /* Saat ciut, foto tetap dipaksa besar (tidak ikut mengecil ekstrem) */
+    height: 75vh; 
+  }
+
+  .hero-text {
+    font-size: 1rem; /* Mengecilkan ukuran font sedikit agar muat di layar hp */
+    
+    /* DISINI TRICKNYA: Teks otomatis berubah jadi HURUF BESAR SEMUA saat dicitukan */
+    text-transform: uppercase; 
+  }
+}
+
+/* Styling Dasar Container */
+.hero-container {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  height: 500px;
+  overflow: hidden;
+  background-color: #fcf9f4; /* Krem */
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Container untuk Foto yang akan diberi Mask & Neon */
+.hero-img-container {
+  position: absolute;
+  bottom: 0;
+  width: auto;
+  height: 100%;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.hero-img {
+  width: auto;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- Trik Utama: Pendaran Neon Hijau --- */
+/* Menggunakan Filter drop-shadow untuk mengikuti bentuk subjek */
+.neon-pulse {
+  filter: drop-shadow(0 0 5px rgba(0, 255, 0, 0.7)) 
+          drop-shadow(0 0 15px rgba(0, 255, 195, 0.5));
+  
+  /* Panggil Animasi 'running' di sini */
+  animation: neon-running 2.5s infinite ease-in-out;
+}
+
+/* Definisi Animasi: Membuat Pendaran Neon Berdenyut */
+@keyframes neon-running {
+  0% {
+    filter: drop-shadow(0 0 5px rgb(0, 255, 0, 0.7))
+            drop-shadow(0 0 15px rgb(0, 255, 195)) ;
+  }
+  50% {
+    filter: drop-shadow(0 0 15px rgb(0, 255, 0, 0.7))  
+            drop-shadow(0 0 40px rgb(0, 255, 195)) ;
+  }
+  100% {
+    filter: drop-shadow(0 0 5px rgba(0, 255, 0, 0.7))  
+            drop-shadow(0 0 15px rgb(0, 255, 195)) ;
+  }
+}
+
+/* Container untuk Foto yang akan diberi Mask & Neon */
+.hero-img-container {
+  position: absolute;
+  bottom: 0;
+  width: auto;
+  height: 100%;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+
+  /* --- Trik Masking agar Bawah Foto Memudar --- */
+  mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
+}
+
+.bg-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 90%; /* Tidak sampai bawah agar tidak menabrak teks */
+  
+  /* Membuat pola titik-titik menggunakan linear-gradient */
+  background-image: radial-gradient(#00ff1a 1.5px, transparent 1.5px);
+  background-size: 24px 24px; /* Jarak antar titik */
+  
+  /* Membuat pola titik memudar di bagian tepi bawah dan atas */
+  mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+  
+  z-index: 0;
+  pointer-events: none;
+}
